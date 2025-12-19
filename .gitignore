@@ -1,0 +1,21 @@
+# Build folders
+build/
+bin/
+obj/
+
+# Visual Studio / Windows
+*.suo
+*.user
+*.userosscache
+*.vcxproj*
+*.pdb
+
+# Compiled object files
+*.o
+*.obj
+*.exe
+*.dll
+
+# Misc
+*.log
+*.vs/
