@@ -35,9 +35,12 @@ namespace LinAlg
         const T& at(size_t index) const;
 
         // Arithmetic
-        Vector operator+(const Vector& second_vector) const ;
+        Vector operator+(const Vector& second_vector) const;
         template<typename U>
         auto operator+(const Vector<U>& second_vector) const;
+        Vector operator-(const Vector& second_vector) const;
+        template<typename U>
+        auto operator-(const Vector<U>& second_vector) const;
     };
 
     // Constructor with a size_t parameter that makes a zero vector of row size parameter
@@ -113,6 +116,35 @@ namespace LinAlg
         Vector<ResultType> new_vector(_size);
         for (size_t i = 0; i < _size; i++) {
             new_vector[i] = _vals[i] + second_vector[i];
+        }
+        return new_vector;
+    }
+
+    // Vector subtraction if both vectors have the same datatype (either both int or both double)
+    template<typename T>
+    Vector<T> Vector<T>::operator-(const Vector<T>& second_vector) const {
+        if (second_vector.get_size() != _size) {
+            throw DifferentDimensionException("Dimension of vector size " + std::to_string(_size) + " does not equal " + std::to_string(second_vector.get_size()));
+        }
+        Vector<T> new_vector(_size);
+        for (size_t i = 0; i < _size; i++) {
+            new_vector[i] = _vals[i] - second_vector[i];
+        }
+        return new_vector;
+    }
+
+    // Vector subtraction if the vectors have different datatypes
+    template<typename T>
+    template<typename U>
+    auto Vector<T>::operator-(const Vector<U>& second_vector) const {
+        using ResultType = decltype(std::declval<T>() + std::declval<U>()); // Declares the type that happens when the vectors of different types are added
+        if (second_vector.get_size() != _size) {
+            throw DifferentDimensionException("Dimension of vector size " + std::to_string(_size) + " does not equal " + std::to_string(second_vector.get_size()));
+        }
+        
+        Vector<ResultType> new_vector(_size);
+        for (size_t i = 0; i < _size; i++) {
+            new_vector[i] = _vals[i] - second_vector[i];
         }
         return new_vector;
     }

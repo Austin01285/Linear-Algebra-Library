@@ -27,3 +27,10 @@ TEST_F(VectorTests, TestVectorAddition) {
     std::vector<int> expected = {12, 9, 4};
     EXPECT_EQ(sum_test_vector.get_values(), expected);
 }
+
+TEST_F(VectorTests, TestVectorSubtraction) {
+    LinAlg::Vector<int> second_vector({9, 4, 2});
+    LinAlg::Vector<int> sum_test_vector = test_vector - second_vector;
+    std::vector<int> expected = {-6, 1, 0};
+    EXPECT_EQ(sum_test_vector.get_values(), expected);
+}
