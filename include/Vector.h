@@ -35,12 +35,16 @@ namespace LinAlg
         const T& at(size_t index) const;
 
         // Arithmetic
-        Vector operator+(const Vector& second_vector) const;
+        Vector operator+(const Vector& second_vector) const; // Adding Vectors
         template<typename U>
         auto operator+(const Vector<U>& second_vector) const;
-        Vector operator-(const Vector& second_vector) const;
+        Vector operator-(const Vector& second_vector) const; // Subtracting Vectors
         template<typename U>
         auto operator-(const Vector<U>& second_vector) const;
+        Vector operator*(T scalar) const; // Multiplying the vector by a scalar
+        template<typename U>
+        auto operator*(U scalar) const;
+
     };
 
     // Constructor with a size_t parameter that makes a zero vector of row size parameter
@@ -137,7 +141,7 @@ namespace LinAlg
     template<typename T>
     template<typename U>
     auto Vector<T>::operator-(const Vector<U>& second_vector) const {
-        using ResultType = decltype(std::declval<T>() + std::declval<U>()); // Declares the type that happens when the vectors of different types are added
+        using ResultType = decltype(std::declval<T>() - std::declval<U>()); // Declares the type that happens when the vectors of different types are added
         if (second_vector.get_size() != _size) {
             throw DifferentDimensionException("Dimension of vector size " + std::to_string(_size) + " does not equal " + std::to_string(second_vector.get_size()));
         }
@@ -145,6 +149,26 @@ namespace LinAlg
         Vector<ResultType> new_vector(_size);
         for (size_t i = 0; i < _size; i++) {
             new_vector[i] = _vals[i] - second_vector[i];
+        }
+        return new_vector;
+    }
+
+    template<typename T>
+    Vector<T> Vector<T>::operator*(T scalar) const {
+        Vector<T> new_vector(_size);
+        for (size_t i = 0; i < _size; i++) {
+            new_vector[i] = _vals[i] * scalar;
+        }
+        return new_vector;
+    }
+
+    template<typename T>
+    template<typename U>
+    auto Vector<T>::operator*(U scalar) const {
+        using ResultType = decltype(std::declval<T>() * std::declval<U>()); // Declares the type that happens when the vectors of different types are added
+        Vector<ResultType> new_vector(_size);
+        for (size_t i = 0; i < _size; i++) {
+            new_vector[i] = _vals[i] * scalar;
         }
         return new_vector;
     }
