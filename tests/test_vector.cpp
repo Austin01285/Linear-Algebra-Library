@@ -80,3 +80,14 @@ TEST_F(VectorTests, TestVectorDotProduct) {
     EXPECT_NEAR(sum_test_vector2[2], 2.44, 0.01);
 
 }
+
+TEST_F(VectorTests, VectorMagnitudeTest) {
+    EXPECT_NEAR(test_vector.magnitude(), 6.16, 0.01);
+}
+
+TEST_F(VectorTests, VectorNormalizationTest) {
+    LinAlg::Vector<double> normal_vector = test_vector.normalization();
+    EXPECT_NEAR(normal_vector[0], 0.49, 0.01);   // Within 0.01
+    EXPECT_NEAR(normal_vector[1], 0.81, 0.01);
+    EXPECT_NEAR(normal_vector[2], 0.32, 0.01);
+}

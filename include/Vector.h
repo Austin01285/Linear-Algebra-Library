@@ -49,6 +49,12 @@ namespace LinAlg
         Vector operator*(const Vector& second_vector) const;
         template<typename U>
         auto operator*(const Vector<U>& second_vector) const;
+
+        // Magnitude
+        double magnitude() const;
+
+        // Normalization
+        Vector<double> normalization() const;
     };
 
     // Constructor with a size_t parameter that makes a zero vector of row size parameter
@@ -205,6 +211,31 @@ namespace LinAlg
         }
         return new_vector;
     }
+
+    // Calculates the magnitude of the vector
+    template<typename T>
+    double Vector<T>::magnitude() const { // The magnitude of a vector is always a double
+        double total = 0.00;
+        for (size_t i = 0; i < _size; i++) {
+            total += _vals[i] * _vals[i];
+        }
+        if (total == 0.00) {
+            return 0.00;
+        }
+        return std::sqrt(total);
+    }
+
+    // Normalize the vector by dividing each value in it by the magnitude of the vector
+    template<typename T>
+    Vector<double> Vector<T>::normalization() const {
+        Vector<double> normalized_vector(_size);
+        double magnitude = this->magnitude();
+        for (size_t i = 0; i < _size; i++) {
+            normalized_vector[i] = _vals[i] / magnitude;
+        }
+        return normalized_vector;
+    }
+
 } // namespace LinAlg
 
 #endif
