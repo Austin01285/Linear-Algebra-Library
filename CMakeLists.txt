@@ -20,11 +20,14 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 # 3. Add your test executable
-add_executable(my_tests tests/test_vector.cpp)
+add_executable(test_vector tests/test_vector.cpp)
+add_executable(test_matrix tests/test_matrix.cpp)
 
 # 4. Link GTest libraries
-target_link_libraries(my_tests GTest::gtest_main)
+target_link_libraries(test_vector GTest::gtest_main)
+target_link_libraries(test_matrix GTest::gtest_main)
 
 # 5. Discover tests for the VS Code Test Explorer
 include(GoogleTest)
-gtest_discover_tests(my_tests)
+gtest_discover_tests(test_vector)
+gtest_discover_tests(test_matrix)
