@@ -15,6 +15,13 @@ namespace LinAlg
             : std::runtime_error(message) {}
     };
 
+    class CrossProductDimensionException : public std::runtime_error {
+    public:
+        // Use the base class constructor for easy message passing
+        explicit CrossProductDimensionException(const std::string& message)
+            : std::runtime_error(message) {}
+    };
+
     template<typename T>
     class Vector {
     private:
@@ -36,25 +43,20 @@ namespace LinAlg
 
         // Arithmetic
         Vector operator+(const Vector& second_vector) const; // Adding Vectors
-        template<typename U>
-        auto operator+(const Vector<U>& second_vector) const;
         Vector operator-(const Vector& second_vector) const; // Subtracting Vectors
-        template<typename U>
-        auto operator-(const Vector<U>& second_vector) const;
         Vector operator*(T scalar) const; // Multiplying the vector by a scalar
-        template<typename U>
-        auto operator*(U scalar) const;
 
         // Dot Product
         Vector operator*(const Vector& second_vector) const;
-        template<typename U>
-        auto operator*(const Vector<U>& second_vector) const;
 
         // Magnitude
         double magnitude() const;
 
         // Normalization
         Vector<double> normalization() const;
+
+        // Cross Product
+        Vector cross(const Vector& second_vector) const;
     };
 
     // Constructor with a size_t parameter that makes a zero vector of row size parameter
@@ -118,22 +120,6 @@ namespace LinAlg
         return new_vector;
     }
 
-    // Vector addition if the vectors have different datatypes
-    template<typename T>
-    template<typename U>
-    auto Vector<T>::operator+(const Vector<U>& second_vector) const {
-        using ResultType = decltype(std::declval<T>() + std::declval<U>()); // Declares the type that happens when the vectors of different types are added
-        if (second_vector.get_size() != _size) {
-            throw DifferentDimensionException("Dimension of vector size " + std::to_string(_size) + " does not equal " + std::to_string(second_vector.get_size()));
-        }
-        
-        Vector<ResultType> new_vector(_size);
-        for (size_t i = 0; i < _size; i++) {
-            new_vector[i] = _vals[i] + second_vector[i];
-        }
-        return new_vector;
-    }
-
     // Vector subtraction if both vectors have the same datatype (either both int or both double)
     template<typename T>
     Vector<T> Vector<T>::operator-(const Vector<T>& second_vector) const {
@@ -141,22 +127,6 @@ namespace LinAlg
             throw DifferentDimensionException("Dimension of vector size " + std::to_string(_size) + " does not equal " + std::to_string(second_vector.get_size()));
         }
         Vector<T> new_vector(_size);
-        for (size_t i = 0; i < _size; i++) {
-            new_vector[i] = _vals[i] - second_vector[i];
-        }
-        return new_vector;
-    }
-
-    // Vector subtraction if the vectors have different datatypes
-    template<typename T>
-    template<typename U>
-    auto Vector<T>::operator-(const Vector<U>& second_vector) const {
-        using ResultType = decltype(std::declval<T>() - std::declval<U>()); // Declares the type that happens when the vectors of different types are added
-        if (second_vector.get_size() != _size) {
-            throw DifferentDimensionException("Dimension of vector size " + std::to_string(_size) + " does not equal " + std::to_string(second_vector.get_size()));
-        }
-        
-        Vector<ResultType> new_vector(_size);
         for (size_t i = 0; i < _size; i++) {
             new_vector[i] = _vals[i] - second_vector[i];
         }
@@ -172,17 +142,6 @@ namespace LinAlg
         return new_vector;
     }
 
-    template<typename T>
-    template<typename U>
-    auto Vector<T>::operator*(U scalar) const {
-        using ResultType = decltype(std::declval<T>() * std::declval<U>()); // Declares the type that happens when the vectors of different types are added
-        Vector<ResultType> new_vector(_size);
-        for (size_t i = 0; i < _size; i++) {
-            new_vector[i] = _vals[i] * scalar;
-        }
-        return new_vector;
-    }
-
     // Vector subtraction if both vectors have the same datatype (either both int or both double)
     template<typename T>
     Vector<T> Vector<T>::operator*(const Vector<T>& second_vector) const {
@@ -190,22 +149,6 @@ namespace LinAlg
             throw DifferentDimensionException("Dimension of vector size " + std::to_string(_size) + " does not equal " + std::to_string(second_vector.get_size()));
         }
         Vector<T> new_vector(_size);
-        for (size_t i = 0; i < _size; i++) {
-            new_vector[i] = _vals[i] * second_vector[i];
-        }
-        return new_vector;
-    }
-
-    // Vector subtraction if the vectors have different datatypes
-    template<typename T>
-    template<typename U>
-    auto Vector<T>::operator*(const Vector<U>& second_vector) const {
-        using ResultType = decltype(std::declval<T>() * std::declval<U>()); // Declares the type that happens when the vectors of different types are added
-        if (second_vector.get_size() != _size) {
-            throw DifferentDimensionException("Dimension of vector size " + std::to_string(_size) + " does not equal " + std::to_string(second_vector.get_size()));
-        }
-        
-        Vector<ResultType> new_vector(_size);
         for (size_t i = 0; i < _size; i++) {
             new_vector[i] = _vals[i] * second_vector[i];
         }
@@ -234,6 +177,21 @@ namespace LinAlg
             normalized_vector[i] = _vals[i] / magnitude;
         }
         return normalized_vector;
+    }
+
+    // Does a Cross Product of two 3D vectors
+    template<typename T>
+    Vector<T> Vector<T>::cross(const Vector<T>& second_vector) const {
+        if (_size != 3) {
+            throw CrossProductDimensionException("Dimension of first vector " + std::to_string(_size) + " needs to be 3 in order to be put into a cross product.");
+        } else if (second_vector.get_size() != 3) {
+            throw CrossProductDimensionException("Dimension of second vector " + std::to_string(second_vector.get_size()) + " needs to be 3 in order to be put into a cross product.");
+        }
+        Vector<T> cross_product_vector(3);
+        cross_product_vector[0] = _vals[1]*second_vector[2] - _vals[2]*second_vector[1];
+        cross_product_vector[1] = _vals[2]*second_vector[0] - _vals[0]*second_vector[2];
+        cross_product_vector[2] = _vals[0]*second_vector[1] - _vals[1]*second_vector[0];
+        return cross_product_vector;
     }
 
 } // namespace LinAlg
