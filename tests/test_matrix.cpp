@@ -19,9 +19,16 @@ TEST_F(MatrixTests, TestAccessAtRowsAndColumns) {
 }
 
 TEST_F(MatrixTests, TestMatrixAssignment) {
-    
+    test_matrix(0, 1) = 3;
+    EXPECT_EQ(test_matrix(0, 1), 3);
 }
 
 TEST_F(MatrixTests, TestOutOfRange) {
     EXPECT_THROW(test_matrix.at(3, 2), std::out_of_range);
+}
+
+TEST_F(MatrixTests, TestTranspose) {
+    LinAlg::Matrix transpose_matrix = test_matrix.transpose();
+    std::vector<std::vector<int>> expected = {{3, 2, 0}, {5, 9, 1}, {2, 13, 9}};
+    EXPECT_EQ(transpose_matrix.get_values(), expected);
 }

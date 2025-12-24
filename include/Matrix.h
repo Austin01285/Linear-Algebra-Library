@@ -32,6 +32,13 @@ namespace LinAlg
         T& at(size_t rows, size_t cols);
         const T& at(size_t rows, size_t cols) const;
 
+        // Transpose
+        Matrix transpose() const;
+
+        // Cross Product
+        Matrix cross(const Matrix& second_matrix) const;
+        Matrix cross(const Vector& vector) const;
+
     };
 
     template<typename T>
@@ -104,6 +111,27 @@ namespace LinAlg
         return _vals[rows][cols];
     }
 
+    template<typename T>
+    Matrix<T> Matrix<T>::transpose() const {
+        Matrix<T> trans_matrix(_cols, _rows);
+        for (int i = 0; i < trans_matrix.get_rows(); i++) {
+            for (int j = 0; j < trans_matrix.get_columns(); j++) {
+                if (i == j) {
+                    trans_matrix(i, j) = _vals[i][j];
+                } else {
+                    trans_matrix(i, j) = _vals[j][i];
+                }
+            }
+        }
+        return trans_matrix;
+    }
+
+    template<typename T>
+    Matrix<T> Matrix<T>::cross(const Matrix<T>& second_matrix) const {
+        if (_cols != second_matrix.get_rows()) {
+            
+        }
+    }
 
 
 }
