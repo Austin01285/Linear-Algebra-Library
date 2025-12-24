@@ -28,6 +28,9 @@ namespace LinAlg
         size_t get_columns() const;
         const std::vector<std::vector<T>> get_values() const;
         T& operator()(size_t rows, size_t cols);
+        const T& operator()(size_t rows, size_t cols) const;
+        T& at(size_t rows, size_t cols);
+        const T& at(size_t rows, size_t cols) const;
 
     };
 
@@ -71,7 +74,35 @@ namespace LinAlg
         return _vals;
     }
 
+    template<typename T>
+    T& Matrix<T>::operator()(size_t rows, size_t cols) {
+        return _vals[rows][cols];
+    }
 
+    template<typename T>
+    const T& Matrix<T>::operator()(size_t rows, size_t cols) const {
+        return _vals[rows][cols];
+    }
+
+    template<typename T>
+    T& Matrix<T>::at(size_t rows, size_t cols) {
+        if (rows >= _rows) {
+            throw std::out_of_range("The " + std::to_string(rows) + " is out of bounds of the Matrix.");
+        } else if (cols >= _cols) {
+            throw std::out_of_range("The " + std::to_string(cols) + " is out of bounds of the Matrix.");
+        }
+        return _vals[rows][cols];
+    }
+
+    template<typename T>
+    const T& Matrix<T>::at(size_t rows, size_t cols) const {
+        if (rows >= _rows) {
+            throw std::out_of_range("The " + std::to_string(rows) + " is out of bounds of the Matrix.");
+        } else if (cols >= _cols) {
+            throw std::out_of_range("The " + std::to_string(cols) + " is out of bounds of the Matrix.");
+        }
+        return _vals[rows][cols];
+    }
 
 
 

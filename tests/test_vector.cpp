@@ -17,6 +17,11 @@ TEST_F(VectorTests, TestAccessAtIndex) {
     EXPECT_EQ(test_vector[0], 3);
 }
 
+TEST_F(VectorTests, TestVectorAssignment) {
+    test_vector[0] = 4;
+    EXPECT_EQ(test_vector[0], 4);
+}
+
 TEST_F(VectorTests, TestOutOfRange) {
     EXPECT_THROW(test_vector.at(4), std::out_of_range);
 }
