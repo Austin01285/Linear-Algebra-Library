@@ -2,6 +2,7 @@
 #define MATRIX_H
 
 #include <vector>
+#include "../include/Vector.h"
 
 namespace LinAlg 
 {
@@ -9,6 +10,13 @@ namespace LinAlg
     public:
         // Use the base class constructor for easy message passing
         explicit MatrixDimensionException(const std::string& message)
+            : std::runtime_error(message) {}
+    };
+
+    class MultViolationException : public std::runtime_error {
+    public:
+        // Use the base class constructor for easy message passing
+        explicit MultViolationException(const std::string& message)
             : std::runtime_error(message) {}
     };
 
@@ -33,11 +41,11 @@ namespace LinAlg
         const T& at(size_t rows, size_t cols) const;
 
         // Transpose
-        Matrix transpose() const;
+        Matrix<T> transpose() const;
 
-        // Cross Product
-        Matrix cross(const Matrix& second_matrix) const;
-        Matrix cross(const Vector& vector) const;
+        // Multiplication
+        Matrix<T> operator*(const Matrix<T>& second_matrix) const;
+        Vector<T> operator*(const Vector<T>& vector) const;
 
     };
 
@@ -126,11 +134,21 @@ namespace LinAlg
         return trans_matrix;
     }
 
+    // Does the cross product of two matrices
     template<typename T>
-    Matrix<T> Matrix<T>::cross(const Matrix<T>& second_matrix) const {
+    Matrix<T> Matrix<T>::operator*(const Matrix<T>& second_matrix) const {
         if (_cols != second_matrix.get_rows()) {
-            
+            throw MultViolationException("The number of columns in the first matrix " + std::to_string(_cols) + " does not equal the number of rows " + std::to_string(second_matrix.get_rows()) +  " in the second matrix.");
         }
+        Matrix<T> mult_matrix(_rows, second_matrix.get_columns());
+        for (int i = 0; i < mult_matrix.get_rows(); ++i) {
+            for (int j = 0; j < mult_matrix.get_columns(); ++j) {
+                for (int k = 0; k < _cols; ++k) {
+                    mult_matrix(i, j) += _vals[i][k] * second_matrix(k, j);
+                }
+            }
+        }
+        return mult_matrix;
     }
 
 
