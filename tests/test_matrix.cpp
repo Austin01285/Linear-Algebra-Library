@@ -60,3 +60,9 @@ TEST_F(MatrixTests, TestIdentityMatrix) {
     std::vector<std::vector<int>> expected = {{1, 0}, {0, 1}};
     EXPECT_EQ(identity_test.get_values(), expected);
 }
+
+TEST_F(MatrixTests, TestDeterminant) {
+    EXPECT_EQ(test_matrix.determinant(), 118);
+    LinAlg::Matrix<int> second_matrix({{5, 20}, {2, 3}});
+    EXPECT_EQ(second_matrix.determinant(), -25);
+}

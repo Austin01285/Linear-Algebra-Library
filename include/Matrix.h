@@ -20,6 +20,13 @@ namespace LinAlg
             : std::runtime_error(message) {}
     };
 
+    class DetViolationException : public std::runtime_error {
+    public:
+        // Use the base class constructor for easy message passing
+        explicit DetViolationException(const std::string& message)
+            : std::runtime_error(message) {}
+    };
+
     template<typename T>
     class Matrix {
         private:
@@ -58,6 +65,10 @@ namespace LinAlg
             }
             return identity_matrix;
         }
+             
+        // Determinant
+        T determinant() const;
+
     };
 
     template<typename T>
@@ -180,6 +191,24 @@ namespace LinAlg
         return mult_vector;
     }
 
+    template<typename T>
+    T Matrix<T>::determinant() const {
+        if (_rows != _cols) {
+            throw DetViolationException("The matrix is not a square matrix (must have the same amount of rows and columns).");
+        }
+        if (_rows == 1) {
+            return _vals[0][0];
+        } else if (_rows == 2) {
+            return _vals[0][0]*_vals[1][1] - _vals[0][1]*_vals[1][0];
+        } else if (_rows == 3) {
+            T first_det = _vals[0][0]*(_vals[1][1]*_vals[2][2] - _vals[1][2]*_vals[2][1]);
+            T second_det = _vals[0][1]*(_vals[1][0]*_vals[2][2] - _vals[2][0]*_vals[1][2]);
+            T third_det = _vals[0][2]*(_vals[1][0]*_vals[2][1] - _vals[2][0]*_vals[1][1]);
+            return first_det - second_det + third_det;
+        } else {
+            throw DetViolationException("Please manually simplify to a 3x3 Square Matrix or Smaller.");
+        }
+    }
 }
 
 
