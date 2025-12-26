@@ -47,6 +47,17 @@ namespace LinAlg
         Matrix<T> operator*(const Matrix<T>& second_matrix) const;
         Vector<T> operator*(const Vector<T>& vector) const;
 
+        // Identity Matrix
+        static Matrix<int> identity(size_t n) {
+            Matrix<int> identity_matrix(n, n);
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (i == j) identity_matrix(i, j) = 1;
+                    else identity_matrix(i, j) = 0;
+                }
+            }
+            return identity_matrix;
+        }
     };
 
     template<typename T>
@@ -89,6 +100,7 @@ namespace LinAlg
         return _vals;
     }
 
+    // Faster but is unsafe for when the index is out of bounds
     template<typename T>
     T& Matrix<T>::operator()(size_t rows, size_t cols) {
         return _vals[rows][cols];
@@ -99,6 +111,7 @@ namespace LinAlg
         return _vals[rows][cols];
     }
 
+    // Slower but checks if the index is out of bounds
     template<typename T>
     T& Matrix<T>::at(size_t rows, size_t cols) {
         if (rows >= _rows) {
@@ -119,6 +132,7 @@ namespace LinAlg
         return _vals[rows][cols];
     }
 
+    // Finds the transpose of a matrix
     template<typename T>
     Matrix<T> Matrix<T>::transpose() const {
         Matrix<T> trans_matrix(_cols, _rows);
@@ -134,7 +148,7 @@ namespace LinAlg
         return trans_matrix;
     }
 
-    // Does the cross product of two matrices
+    // Multiplies two matrices
     template<typename T>
     Matrix<T> Matrix<T>::operator*(const Matrix<T>& second_matrix) const {
         if (_cols != second_matrix.get_rows()) {
@@ -151,6 +165,20 @@ namespace LinAlg
         return mult_matrix;
     }
 
+    // Multiplies a matrix and a vector together and returns a vector
+    template<typename T>
+    Vector<T> Matrix<T>::operator*(const Vector<T>& vector) const {
+        if (_cols != vector.get_size()) {
+            throw MultViolationException("The number of columns in the matrix " + std::to_string(_cols) + " does not equal the number of values " + std::to_string(vector.get_size()) +  " in the vector.");
+        }
+        Vector<T> mult_vector(_rows);
+        for (int i = 0; i < _rows; i++) {
+            for (int j = 0; j < vector.get_size(); j++) {
+                mult_vector[i] += _vals[i][j] * vector[j];
+            }
+        }
+        return mult_vector;
+    }
 
 }
 

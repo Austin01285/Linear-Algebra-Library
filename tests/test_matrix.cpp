@@ -33,14 +33,30 @@ TEST_F(MatrixTests, TestTranspose) {
     EXPECT_EQ(transpose_matrix.get_values(), expected);
 }
 
-TEST_F(MatrixTests, MultiplicationMatrixTest) {
+TEST_F(MatrixTests, MultMatrixTest) {
     LinAlg::Matrix<int> second_matrix({{5, 10}, {2, 3}, {9, 1}});
     LinAlg::Matrix<int> mult_matrix = test_matrix*second_matrix;
     std::vector<std::vector<int>> expected = {{43, 47}, {145, 60}, {83, 12}};
     EXPECT_EQ(mult_matrix.get_values(), expected);
 }
 
+
+TEST_F(MatrixTests, MultVectorTest) {
+    LinAlg::Vector<int> test_vector({1, 5, 7});
+    LinAlg::Vector<int> mult_vector = test_matrix*test_vector;
+    std::vector<int> expected = {42, 138, 68};
+    EXPECT_EQ(mult_vector.get_values(), expected);
+}
+
 TEST_F(MatrixTests, MultViolationTest) {
     LinAlg::Matrix<int> second_matrix({{5, 20}, {2, 3}});
     EXPECT_THROW(test_matrix*second_matrix, MultViolationException);
+    LinAlg::Vector<int> test_vector({2, 5});
+    EXPECT_THROW(test_matrix*test_vector, MultViolationException);
+}
+
+TEST_F(MatrixTests, TestIdentityMatrix) {
+    LinAlg::Matrix<int> identity_test = LinAlg::Matrix<int>::identity(2);
+    std::vector<std::vector<int>> expected = {{1, 0}, {0, 1}};
+    EXPECT_EQ(identity_test.get_values(), expected);
 }
