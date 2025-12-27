@@ -38,6 +38,10 @@ TEST_F(MatrixTests, MultMatrixTest) {
     LinAlg::Matrix<int> mult_matrix = test_matrix*second_matrix;
     std::vector<std::vector<int>> expected = {{43, 47}, {145, 60}, {83, 12}};
     EXPECT_EQ(mult_matrix.get_values(), expected);
+    int test_scalar = 3;
+    mult_matrix = test_matrix*test_scalar;
+    expected = {{9, 15, 6}, {6, 27, 39}, {0, 3, 27}};
+    EXPECT_EQ(mult_matrix.get_values(), expected);
 }
 
 
@@ -65,4 +69,17 @@ TEST_F(MatrixTests, TestDeterminant) {
     EXPECT_EQ(test_matrix.determinant(), 118);
     LinAlg::Matrix<int> second_matrix({{5, 20}, {2, 3}});
     EXPECT_EQ(second_matrix.determinant(), -25);
+}
+
+TEST_F(MatrixTests, TestInverse) {
+    LinAlg::Matrix<double> inverted_matrix = test_matrix.inverse();
+    EXPECT_NEAR(inverted_matrix(0,0), 0.57, 0.01);   // Within 0.01
+    EXPECT_NEAR(inverted_matrix(0,1), -0.36, 0.01); 
+    EXPECT_NEAR(inverted_matrix(0,2), 0.39, 0.01); 
+    EXPECT_NEAR(inverted_matrix(1,0), -0.15, 0.01); 
+    EXPECT_NEAR(inverted_matrix(1,1), 0.22, 0.01); 
+    EXPECT_NEAR(inverted_matrix(1,2), -0.29, 0.01); 
+    EXPECT_NEAR(inverted_matrix(2,0), 0.01, 0.01); 
+    EXPECT_NEAR(inverted_matrix(2,1), -0.02, 0.01); 
+    EXPECT_NEAR(inverted_matrix(2,2), 0.14, 0.01); 
 }

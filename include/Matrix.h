@@ -20,10 +20,17 @@ namespace LinAlg
             : std::runtime_error(message) {}
     };
 
-    class DetViolationException : public std::runtime_error {
+    class SquareMatrixException : public std::runtime_error {
     public:
         // Use the base class constructor for easy message passing
-        explicit DetViolationException(const std::string& message)
+        explicit SquareMatrixException(const std::string& message)
+            : std::runtime_error(message) {}
+    };
+
+    class SingularException : public std::runtime_error {
+    public:
+        // Use the base class constructor for easy message passing
+        explicit SingularException(const std::string& message)
             : std::runtime_error(message) {}
     };
 
@@ -53,6 +60,7 @@ namespace LinAlg
         // Multiplication
         Matrix<T> operator*(const Matrix<T>& second_matrix) const;
         Vector<T> operator*(const Vector<T>& vector) const;
+        Matrix<T> operator*(T scalar) const;
 
         // Identity Matrix
         static Matrix<int> identity(size_t n) {
@@ -68,6 +76,9 @@ namespace LinAlg
              
         // Determinant
         T determinant() const;
+
+        // Inverse
+        Matrix<double> inverse() const;
 
     };
 
@@ -192,9 +203,21 @@ namespace LinAlg
     }
 
     template<typename T>
+    Matrix<T> Matrix<T>::operator*(T scalar) const {
+        Matrix<T> mult_matrix(_rows, _cols);
+        for (int i = 0; i < _rows; i++) {
+            for (int j = 0; j < _cols; j++) {
+                mult_matrix(i, j) = _vals[i][j] * scalar;
+            }
+        }
+        return mult_matrix;
+    }
+
+    // Finds the determinant of a square matrix
+    template<typename T>
     T Matrix<T>::determinant() const {
         if (_rows != _cols) {
-            throw DetViolationException("The matrix is not a square matrix (must have the same amount of rows and columns).");
+            throw SquareMatrixException("The matrix is not a square matrix (must have the same amount of rows and columns).");
         }
         if (_rows == 1) {
             return _vals[0][0];
@@ -206,9 +229,52 @@ namespace LinAlg
             T third_det = _vals[0][2]*(_vals[1][0]*_vals[2][1] - _vals[2][0]*_vals[1][1]);
             return first_det - second_det + third_det;
         } else {
-            throw DetViolationException("Please manually simplify to a 3x3 Square Matrix or Smaller.");
+            throw std::out_of_range("Please manually simplify to a 3x3 Square Matrix or Smaller.");
         }
     }
+
+
+
+
+    template<typename T>
+    Matrix<double> Matrix<T>::inverse() const {
+        Matrix<double> inverse_matrix(_rows, _cols);
+        if (_rows != _cols) {
+            throw SquareMatrixException("The matrix is not a square matrix (must have the same amount of rows and columns).");
+        }
+        double deter = static_cast<double>(this->determinant());
+        double inv_det = 1.0/deter;
+        if (abs(deter) < 1e-10 && _rows > 1) {
+            throw SingularException("Matrix is singular or nearly singular.");
+        }
+        if (_rows == 1) {
+            inverse_matrix(0, 0) = 1/_vals[0][0];
+        } else if (_rows == 2) {
+            inverse_matrix(0, 0) = (1.0/deter)*_vals[1][1];
+            inverse_matrix(0, 1) = -(1.0/deter)*_vals[0][1];
+            inverse_matrix(1, 0) = -(1.0/deter)*_vals[1][0];
+            inverse_matrix(1, 1) = (1.0/deter)*_vals[0][0];
+        } else if (_rows == 3) {
+            // Row 0
+            inverse_matrix(0, 0) = inv_det * (_vals[1][1]*_vals[2][2] - _vals[1][2]*_vals[2][1]);
+            inverse_matrix(0, 1) = -inv_det * (_vals[0][1]*_vals[2][2] - _vals[0][2]*_vals[2][1]);
+            inverse_matrix(0, 2) = inv_det * (_vals[0][1]*_vals[1][2] - _vals[0][2]*_vals[1][1]);
+            
+            // Row 1
+            inverse_matrix(1, 0) = -inv_det * (_vals[1][0]*_vals[2][2] - _vals[1][2]*_vals[2][0]);
+            inverse_matrix(1, 1) = inv_det * (_vals[0][0]*_vals[2][2] - _vals[0][2]*_vals[2][0]);
+            inverse_matrix(1, 2) = -inv_det * (_vals[0][0]*_vals[1][2] - _vals[0][2]*_vals[1][0]);
+            
+            // Row 2
+            inverse_matrix(2, 0) = inv_det * (_vals[1][0]*_vals[2][1] - _vals[1][1]*_vals[2][0]);
+            inverse_matrix(2, 1) = -inv_det * (_vals[0][0]*_vals[2][1] - _vals[0][1]*_vals[2][0]);
+            inverse_matrix(2, 2) = inv_det * (_vals[0][0]*_vals[1][1] - _vals[0][1]*_vals[1][0]);
+        } else {
+            throw std::out_of_range("Please manually simplify to a 3x3 Square Matrix or Smaller.");
+        }
+        return inverse_matrix;
+    }
+
 }
 
 
