@@ -92,3 +92,14 @@ TEST_F(MatrixTests, TestInverse) {
     EXPECT_NEAR(inverted_matrix(2,1), -0.02, 0.01); 
     EXPECT_NEAR(inverted_matrix(2,2), 0.14, 0.01); 
 }
+
+TEST_F(MatrixTests, TestTrace) {
+    EXPECT_EQ(test_matrix.trace(), 21);
+}
+
+TEST_F(MatrixTests, TestDiagonal) {
+    LinAlg::Vector<int> test_vector({1, 5, 7});
+    LinAlg::Matrix<int> diagonal_matrix = LinAlg::Matrix<int>::diagonal(test_vector);
+    std::vector<std::vector<int>> expected = {{1, 0, 0}, {0, 5, 0}, {0, 0, 7}};
+    EXPECT_EQ(diagonal_matrix.get_values(), expected);
+}

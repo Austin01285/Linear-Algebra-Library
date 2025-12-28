@@ -100,6 +100,21 @@ namespace LinAlg
             return out;
         }
 
+        // Trace
+        T trace() const;
+
+        // Diagonal Matrix
+        static Matrix<T> diagonal(const Vector<T>& values) {
+            Matrix<T> diagonal_matrix(values.get_size(), values.get_size());
+            for (int i = 0; i < values.get_size(); i++) {
+                for (int j = 0; j < values.get_size(); j++) {
+                    if (i == j) diagonal_matrix(i, j) = values[i];
+                    else diagonal_matrix(i, j) = 0;
+                }
+            }
+            return diagonal_matrix;
+        }
+
     };
 
     template<typename T>
@@ -253,9 +268,6 @@ namespace LinAlg
         }
     }
 
-
-
-
     template<typename T>
     Matrix<double> Matrix<T>::inverse() const {
         Matrix<double> inverse_matrix(_rows, _cols);
@@ -294,6 +306,24 @@ namespace LinAlg
         }
         return inverse_matrix;
     }
+
+    template<typename T>
+    T Matrix<T>::trace() const {
+        if (_rows != _cols) {
+            throw SquareMatrixException("The matrix is not a square matrix (must have the same amount of rows and columns).");
+        }
+        T sum = T(0);
+        for (size_t i = 0; i < _rows; i++) {
+            for (size_t j = 0; j < _cols; j++) {
+                if (i == j) {
+                    sum += _vals[i][j];
+                }
+            }
+        }
+        return sum;
+    }
+
+
 
 }
 
