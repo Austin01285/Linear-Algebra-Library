@@ -1,5 +1,8 @@
 #include <gtest/gtest.h>
 #include "../include/Vector.h"
+#include <string>
+#include <sstream>
+#include <iostream>
 
 using namespace LinAlg;
 
@@ -8,6 +11,12 @@ class VectorTests : public ::testing::Test {
   LinAlg::Vector<int> test_vector;
   VectorTests() : test_vector({3, 5, 2}) {}
 };
+
+TEST_F(VectorTests, TestVectorOutput) {
+    std::ostringstream output_stream;
+    output_stream << test_vector;
+    EXPECT_EQ(output_stream.str(), "[3, 5, 2]");
+}
 
 TEST_F(VectorTests, TestSize) {
     EXPECT_EQ(test_vector.get_size(), 3);
@@ -73,6 +82,5 @@ TEST_F(VectorTests, CrossProductTest) {
     LinAlg::Vector<int> cross_test_vector = test_vector.cross(second_vector);
     std::vector<int> expected = {2, 12, -33};
     EXPECT_EQ(cross_test_vector.get_values(), expected);
-
 
 }

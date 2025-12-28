@@ -1,5 +1,8 @@
 #include <gtest/gtest.h>
 #include "../include/Matrix.h"
+#include <string>
+#include <sstream>
+#include <iostream>
 
 using namespace LinAlg;
 
@@ -8,6 +11,12 @@ class MatrixTests : public ::testing::Test {
   LinAlg::Matrix<int> test_matrix;
   MatrixTests() : test_matrix({{3, 5, 2}, {2, 9, 13}, {0, 1, 9}}) {}
 };
+
+TEST_F(MatrixTests, TestMatrixOutput) {
+    std::ostringstream output_stream;
+    output_stream << test_matrix;
+    EXPECT_EQ(output_stream.str(), "[{3, 5, 2}, {2, 9, 13}, {0, 1, 9}]");
+}
 
 TEST_F(MatrixTests, TestRowsAndColumns) {
     EXPECT_EQ(test_matrix.get_rows(), 3);

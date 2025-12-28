@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <stdexcept>
 #include <string>
+#include <iostream>
 
 namespace LinAlg
 {
@@ -57,6 +58,19 @@ namespace LinAlg
 
         // Cross Product
         Vector cross(const Vector& second_vector) const;
+
+        // Output
+        friend std::ostream& operator<<(std::ostream& out, const Vector<T>& obj) {
+            out << "[";
+            for (size_t i = 0; i < obj._size; i++) {
+                out << obj._vals[i];
+                if (i < obj._size - 1) {
+                    out << ", ";
+                }
+            }
+            out << "]";
+            return out;
+        }
     };
 
     // Constructor with a size_t parameter that makes a zero vector of row size parameter

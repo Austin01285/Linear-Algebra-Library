@@ -80,6 +80,26 @@ namespace LinAlg
         // Inverse
         Matrix<double> inverse() const;
 
+        // Ouput
+        friend std::ostream& operator<<(std::ostream& out, const Matrix<T>& obj) {
+            out << "[";
+            for (size_t i = 0; i < obj._rows; i++) {
+                out << "{";
+                for (size_t j = 0; j < obj._cols; j++) {
+                    out << obj._vals[i][j];
+                    if (j < obj._cols - 1) {
+                        out << ", ";
+                    }
+                }
+                out << "}";
+                if (i < obj._rows - 1) {
+                    out << ", ";
+                }
+            }
+            out << "]";
+            return out;
+        }
+
     };
 
     template<typename T>
