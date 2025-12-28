@@ -57,6 +57,10 @@ namespace LinAlg
         // Transpose
         Matrix<T> transpose() const;
 
+        // Addition/Subtraction
+        Matrix<T> operator+(const Matrix<T>& second_matrix) const;
+        Matrix<T> operator-(const Matrix<T>& second_matrix) const;
+
         // Multiplication
         Matrix<T> operator*(const Matrix<T>& second_matrix) const;
         Vector<T> operator*(const Vector<T>& vector) const;
@@ -204,6 +208,44 @@ namespace LinAlg
         }
         return trans_matrix;
     }
+
+    // Add two matrices
+    template<typename T>
+    Matrix<T> Matrix<T>::operator+(const Matrix<T>& second_matrix) const {
+        if (_rows != second_matrix.get_rows()) {
+            throw MultViolationException("The number of rows in the first matrix " + std::to_string(_rows) + " does not equal the number of rows " + std::to_string(second_matrix.get_rows()) +  " in the second matrix.");
+        }
+        if (_cols != second_matrix.get_columns()) {
+            throw MultViolationException("The number of columns in the first matrix " + std::to_string(_cols) + " does not equal the number of columns " + std::to_string(second_matrix.get_columns()) +  " in the second matrix.");
+        }
+        Matrix<T> add_matrix(_rows, second_matrix.get_columns());
+        for (int i = 0; i < add_matrix.get_rows(); ++i) {
+            for (int j = 0; j < add_matrix.get_columns(); ++j) {
+                add_matrix(i, j) = _vals[i][j] + second_matrix(i, j);
+            }
+        }
+        return add_matrix;
+
+    }
+
+    // Subtract the first matrix by the second matrix
+    template<typename T>
+    Matrix<T> Matrix<T>::operator-(const Matrix<T>& second_matrix) const {
+        if (_rows != second_matrix.get_rows()) {
+            throw MultViolationException("The number of rows in the first matrix " + std::to_string(_rows) + " does not equal the number of rows " + std::to_string(second_matrix.get_rows()) +  " in the second matrix.");
+        }
+        if (_cols != second_matrix.get_columns()) {
+            throw MultViolationException("The number of columns in the first matrix " + std::to_string(_cols) + " does not equal the number of columns " + std::to_string(second_matrix.get_columns()) +  " in the second matrix.");
+        }
+        Matrix<T> subtract_matrix(_rows, second_matrix.get_columns());
+        for (int i = 0; i < subtract_matrix.get_rows(); ++i) {
+            for (int j = 0; j < subtract_matrix.get_columns(); ++j) {
+                subtract_matrix(i, j) = _vals[i][j] - second_matrix(i, j);
+            }
+        }
+        return subtract_matrix;
+
+    } 
 
     // Multiplies two matrices
     template<typename T>

@@ -42,6 +42,20 @@ TEST_F(MatrixTests, TestTranspose) {
     EXPECT_EQ(transpose_matrix.get_values(), expected);
 }
 
+TEST_F(MatrixTests, AddMatrixTest) {
+    LinAlg::Matrix<int> second_matrix({{5, 10, 4}, {2, 3, 7}, {9, 1, 8}});
+    LinAlg::Matrix<int> add_matrix = test_matrix+second_matrix;
+    std::vector<std::vector<int>> expected = {{8, 15, 6}, {4, 12, 20}, {9, 2, 17}};
+    EXPECT_EQ(add_matrix.get_values(), expected);
+}
+
+TEST_F(MatrixTests, SubtractMatrixTest) {
+    LinAlg::Matrix<int> second_matrix({{5, 10, 4}, {2, 3, 7}, {9, 1, 8}});
+    LinAlg::Matrix<int> subtract_matrix = test_matrix-second_matrix;
+    std::vector<std::vector<int>> expected = {{-2, -5, -2}, {0, 6, 6}, {-9, 0, 1}};
+    EXPECT_EQ(subtract_matrix.get_values(), expected);
+}
+
 TEST_F(MatrixTests, MultMatrixTest) {
     LinAlg::Matrix<int> second_matrix({{5, 10}, {2, 3}, {9, 1}});
     LinAlg::Matrix<int> mult_matrix = test_matrix*second_matrix;
