@@ -22,12 +22,15 @@ enable_testing()
 # 3. Add your test executable
 add_executable(test_vector tests/test_vector.cpp)
 add_executable(test_matrix tests/test_matrix.cpp)
+add_executable(test_quaternion tests/test_quaternion.cpp)
 
 # 4. Link GTest libraries
 target_link_libraries(test_vector GTest::gtest_main)
 target_link_libraries(test_matrix GTest::gtest_main)
+target_link_libraries(test_quaternion GTest::gtest_main)
 
 # 5. Discover tests for the VS Code Test Explorer
 include(GoogleTest)
 gtest_discover_tests(test_vector)
 gtest_discover_tests(test_matrix)
+gtest_discover_tests(test_quaternion)
