@@ -79,6 +79,35 @@ public:
         return Quaternion(new_w, new_x, new_y, new_z);
     }
 
+    Quaternion<T> conjugate() {
+        return Quaternion(w(), -(x()), -(y()), -(z()));
+    }
+
+    Quaternion<T> inverse() {
+        T mag_sq = w_*w_ + x_*x_ + y_*y_ + z_*z_;
+
+        // Fast path: if already (approximately) unit → just conjugate
+        if (std::abs(mag_sq - T(1)) < T(1e-8))
+        {
+            return conjugate();
+        }
+
+        // General case
+        if (mag_sq < T(1e-12))  // very small magnitude → singular, cannot invert
+        {
+            throw std::runtime_error("Cannot invert quaternion: magnitude near zero");
+            // or: return Quaternion(T(0), T(0), T(0), T(0)); // depending on your convention
+        }
+
+        T inv_mag_sq = T(1) / mag_sq;
+
+        return Quaternion(
+            w_ * inv_mag_sq,
+            -x_ * inv_mag_sq,
+            -y_ * inv_mag_sq,
+            -z_ * inv_mag_sq
+        );
+    }
 };
 
 }

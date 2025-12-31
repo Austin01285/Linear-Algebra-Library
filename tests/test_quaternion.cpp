@@ -52,3 +52,23 @@ TEST_F(QuaternionTests, TestQuaternionMult) {
     EXPECT_NEAR(qz180.y(), 0.00, 1e-10);
     EXPECT_NEAR(qz180.z(), 1.00, 1e-10);
 }
+
+TEST_F(QuaternionTests, TestConjugate) {
+    Quaternion<double> conjugate_test = test_quat.conjugate();
+    EXPECT_EQ(conjugate_test.w(), 1.25);
+    EXPECT_EQ(conjugate_test.x(), 0.00);
+    EXPECT_EQ(conjugate_test.y(), -0.75);
+    EXPECT_EQ(conjugate_test.z(), 0.00);
+}
+
+TEST_F(QuaternionTests, TestInverse) {
+    Quaternion<double> inverse_test = test_quat.inverse();
+
+    // test quaternion * inverse of test should be close to identity (q*q^-1 = I)
+    Quaternion<double> product = test_quat * inverse_test;
+
+    EXPECT_NEAR(product.w(), 1.0, 1e-10);
+    EXPECT_NEAR(product.x(), 0.0, 1e-10);
+    EXPECT_NEAR(product.y(), 0.0, 1e-10);
+    EXPECT_NEAR(product.z(), 0.0, 1e-10);
+}
