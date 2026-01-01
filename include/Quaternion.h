@@ -1,3 +1,7 @@
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 #ifndef QUATERNION_H
 #define QUATERNION_H
 
@@ -19,6 +23,11 @@ public:
 
     // Raw components (used for deserialization, math)
     Quaternion(T w, T x, T y, T z) : w_(w), x_(x), y_(y), z_(z) {}
+
+    friend std::ostream& operator<<(std::ostream& os, const Quaternion<T>& q) {
+        os << "Q(" << q.w() << ", " << q.x() << ", " << q.y() << ", " << q.z() << ")";
+        return os;
+    }
 
     static Quaternion<T> identity() {
         return Quaternion(T(1), T(0), T(0), T(0));
@@ -180,6 +189,45 @@ public:
 
     // Dot product between two Quaternions
     T dot(const Quaternion<T>& quat) const;
+
+    Vector<T> toEulerXYZ() {
+        Quaternion<T> q = normalized();
+        T sin_theta = T(2) * (q.w() * q.y() - q.z() * q.x());
+        T bank, pitch, heading;
+        if (std::abs(sin_theta) >= T(1.0 - 1e-10)) { // If the Euler angle is close to or at +/- 90
+            bank = std::atan2(2.0 * (q.x() * q.y() + q.w() * q.z()),
+            pitch = q.w() * q.w() + q.x() * q.x() - q.y() * q.y() - q.z() * q.z());
+            std::copysign(M_PI/2.0, sin_theta);
+            heading = 0.00;
+        } else {
+            bank = std::atan2(2.0 * (q.w() * q.x() + q.y() * q.z()),
+            1.0 - 2.0 * (q.x() * q.x() + q.y() * q.y()));
+            pitch = std::asin(sin_theta);
+            heading = std::atan2(2.0 * (q.w() * q.z() + q.x() * q.y()),
+            1.0 - 2.0 * (q.y() * q.y() + q.z() * q.z()));
+        }
+        return Vector<T>({bank, pitch, heading});
+    }
+
+    Quaternion<T> fromEulerXYZ(const Vector<T>& xyz) {
+        if (xyz.get_size() != 3) {
+            throw std::invalid_argument("Euler angles vector must have 3 components");
+        }
+        T cos_bank = std::cos(xyz[0]/T(2));
+        T sin_bank = std::sin(xyz[0]/T(2));
+        T cos_pitch = std::cos(xyz[1]/T(2));
+        T sin_pitch = std::sin(xyz[1]/T(2));
+        T cos_heading = std::cos(xyz[2]/T(2));
+        T sin_heading = std::sin(xyz[2]/T(2));
+
+        Quaternion<T> q;
+        q.w_ = cos_bank * cos_pitch * cos_heading + sin_bank * sin_pitch * sin_heading;
+        q.x_ = sin_bank * cos_pitch * cos_heading - cos_bank * sin_pitch * sin_heading;
+        q.y_ = cos_bank * sin_pitch * cos_heading + sin_bank * cos_pitch * sin_heading;
+        q.z_ = cos_bank * cos_pitch * sin_heading - sin_bank * sin_pitch * cos_heading;
+        return q.normalized();
+    }
+
 };
 
     template<typename T>

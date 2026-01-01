@@ -149,3 +149,20 @@ TEST_F(QuaternionTests, TestAxisAngleGetter) {
     EXPECT_TRUE(vectorsApproxEqual(axis_x, Vector<double>({1.0, 0.0, 0.0}), 1e-10) 
     || vectorsApproxEqual(axis_x, Vector<double>({-1.0, 0.0, 0.0}), 1e-10));
 }
+
+TEST_F(QuaternionTests, TestEulerConversion) {
+    Vector<double> euler_result = test_quat.toEulerXYZ();
+    EXPECT_NEAR(euler_result[0], 0.00, 1e-8);
+    EXPECT_NEAR(euler_result[1], 1.080839, 1e-8);
+    EXPECT_NEAR(euler_result[2], 0.00, 1e-8);
+    
+    Vector<double> euler({M_PI/6.0, M_PI/9.0, M_PI/4.0});  // 30° roll, 20° pitch, 45° yaw
+    Quaternion<double> q = test_quat.fromEulerXYZ(euler);
+
+    // Verify it's unit
+    EXPECT_TRUE(q.isUnit(1e-8));
+
+    // Round-trip: convert back to Euler
+    Vector<double> recovered = q.toEulerXYZ();
+    EXPECT_TRUE(vectorsApproxEqual(euler, recovered, 1e-8));
+}
