@@ -72,3 +72,29 @@ TEST_F(QuaternionTests, TestInverse) {
     EXPECT_NEAR(product.y(), 0.0, 1e-10);
     EXPECT_NEAR(product.z(), 0.0, 1e-10);
 }
+
+TEST_F(QuaternionTests, TestVectorRotation) {
+    Quaternion<double> q_z90 = Quaternion<double>::fromAxisAngle(Vector<double>({0.0, 0.0, 1.0}), M_PI / 2.0);
+    Vector<double> v_x({1.0, 0.0, 0.0});           // along x-axis
+    Vector<double> expected_y({0.0, 1.0, 0.0});    // should become along y-axis
+    Vector<double> result = q_z90.rotate_vector(v_x);
+    EXPECT_NEAR(result[0], expected_y[0], 1e-10);
+    EXPECT_NEAR(result[1], expected_y[1], 1e-10);
+    EXPECT_NEAR(result[2], expected_y[2], 1e-10);
+}
+
+Matrix<double> rotation_matrix_from_axis_angle(
+    const Vector<double>& axis, double angle_rad) {
+    Quaternion<double> q = Quaternion<double>::fromAxisAngle(axis, angle_rad);
+    return q.to_rotation_matrix();
+}
+
+TEST_F(QuaternionTests, TestFromRotationMatrix) {
+    Matrix<double> R = rotation_matrix_from_axis_angle(Vector<double>({1, 0, 0}), M_PI / 2.0);
+    Quaternion<double> q = Quaternion<double>::from_rotation_matrix(R);
+    EXPECT_NEAR(q.w(), 0.707106781187, 1e-8);   // ← 1e-8 is safe
+    EXPECT_NEAR(q.x(), 0.707106781187, 1e-8);
+    EXPECT_NEAR(q.y(), 0.0, 1e-10);
+    EXPECT_NEAR(q.z(), 0.0, 1e-10);
+    EXPECT_TRUE(q.isUnit(1e-8));
+}
