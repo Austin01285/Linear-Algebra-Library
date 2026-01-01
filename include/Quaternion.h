@@ -25,7 +25,7 @@ public:
     }
 
     // Named constructors that guarantee unit length (most common pattern)
-    static Quaternion<T> fromAxisAngle(const Vector<T>& axis, T angle_rad) {
+    static Quaternion<T> fromAxisAngle(const Vector<T>& axis, T angle_rad) { // angle_rad must be radians
         if (axis.get_size() != 3) {
             throw std::invalid_argument("Invalid axis vector (size of vector should be 3)");
         }
@@ -112,6 +112,12 @@ public:
     T x() const { return x_; }
     T y() const { return y_; }
     T z() const { return z_; }
+    T angle() const { return T(2) * std::acos(w_); } // Returns in radians
+    Vector<T> axis() const { 
+        T sin_half = std::sqrt(1-(w_*w_));
+        if (sin_half < T(1e-6)) return Vector<T>({T(1), T(0), T(0)});
+        return Vector<T>({x_/sin_half, y_/sin_half, z_/sin_half});
+    }
 
     // Normalization
     Quaternion<T> normalized() const {

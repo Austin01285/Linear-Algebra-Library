@@ -90,11 +90,21 @@ Matrix<double> rotation_matrix_from_axis_angle(
 }
 
 TEST_F(QuaternionTests, TestFromRotationMatrix) {
+    // Testing 90 degree rotation around the x-axis
     Matrix<double> R = rotation_matrix_from_axis_angle(Vector<double>({1, 0, 0}), M_PI / 2.0);
     Quaternion<double> q = Quaternion<double>::from_rotation_matrix(R);
     EXPECT_NEAR(q.w(), 0.707106781187, 1e-8);   // ← 1e-8 is safe
     EXPECT_NEAR(q.x(), 0.707106781187, 1e-8);
     EXPECT_NEAR(q.y(), 0.0, 1e-10);
+    EXPECT_NEAR(q.z(), 0.0, 1e-10);
+    EXPECT_TRUE(q.isUnit(1e-8));
+
+    // Testing 180 degree rotation around the y-axis
+    R = rotation_matrix_from_axis_angle(Vector<double>({0, 1, 0}), M_PI);
+    q = Quaternion<double>::from_rotation_matrix(R);
+    EXPECT_NEAR(q.w(), 0.0, 1e-10);
+    EXPECT_NEAR(q.x(), 0.0, 1e-10);
+    EXPECT_NEAR(std::abs(q.y()), 1.0, 1e-10);  // y should be ±1
     EXPECT_NEAR(q.z(), 0.0, 1e-10);
     EXPECT_TRUE(q.isUnit(1e-8));
 }
@@ -114,4 +124,28 @@ TEST_F(QuaternionTests, SlurpTest) {
     EXPECT_NEAR(result.z(), 0.382683432365, 1e-8);
 
     EXPECT_TRUE(result.isUnit(1e-8));
+}
+
+// Helper: Check if two vectors are approximately equal (component-wise)
+bool vectorsApproxEqual(const Vector<double>& a, const Vector<double>& b, double tol = 1e-8) {
+    if (a.get_size() != b.get_size()) return false;
+    for (size_t i = 0; i < a.get_size(); ++i) {
+        if (std::abs(a[i] - b[i]) > tol) return false;
+    }
+    return true;
+}
+
+TEST_F(QuaternionTests, TestAxisAngleGetter) {
+    // Test 90 degrees around the Z-axis
+    Quaternion<double> q_z90 = Quaternion<double>::fromAxisAngle(Vector<double>({0.0, 0.0, 1.0}), M_PI / 2.0);
+    EXPECT_NEAR(q_z90.angle(), M_PI / 2.0, 1e-10);
+    Vector<double> axis_z = q_z90.axis();
+    EXPECT_TRUE(vectorsApproxEqual(axis_z, Vector<double>({0.0, 0.0, 1.0}), 1e-10));
+
+    // Test 180 degrees around the X-axis
+    Quaternion<double> q_x180 = Quaternion<double>::fromAxisAngle(Vector<double>({1.0, 0.0, 0.0}), M_PI);
+    EXPECT_NEAR(q_x180.angle(), M_PI, 1e-10);
+    Vector<double> axis_x = q_x180.axis();
+    EXPECT_TRUE(vectorsApproxEqual(axis_x, Vector<double>({1.0, 0.0, 0.0}), 1e-10) 
+    || vectorsApproxEqual(axis_x, Vector<double>({-1.0, 0.0, 0.0}), 1e-10));
 }
