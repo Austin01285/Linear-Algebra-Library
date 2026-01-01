@@ -98,3 +98,20 @@ TEST_F(QuaternionTests, TestFromRotationMatrix) {
     EXPECT_NEAR(q.z(), 0.0, 1e-10);
     EXPECT_TRUE(q.isUnit(1e-8));
 }
+
+TEST_F(QuaternionTests, SlurpTest) {
+    // q0 = identity, q1 = 90° around Z
+    Quaternion<double> q0(1.0, 0.0, 0.0, 0.0);
+    Quaternion<double> q1 = Quaternion<double>::fromAxisAngle(Vector<double>({0.0, 0.0, 1.0}), M_PI/2.0);
+
+    // t = 0.5 → 45° rotation
+    Quaternion<double> result = Quaternion<double>::slerp(q0, q1, 0.5);
+
+    // Expected: w = cos(22.5°) ≈ 0.9239, z = sin(22.5°) ≈ 0.3827
+    EXPECT_NEAR(result.w(), 0.923879532511, 1e-8);
+    EXPECT_NEAR(result.x(), 0.0, 1e-10);
+    EXPECT_NEAR(result.y(), 0.0, 1e-10);
+    EXPECT_NEAR(result.z(), 0.382683432365, 1e-8);
+
+    EXPECT_TRUE(result.isUnit(1e-8));
+}

@@ -20,6 +20,10 @@ public:
     // Raw components (used for deserialization, math)
     Quaternion(T w, T x, T y, T z) : w_(w), x_(x), y_(y), z_(z) {}
 
+    static Quaternion<T> identity() {
+        return Quaternion(T(1), T(0), T(0), T(0));
+    }
+
     // Named constructors that guarantee unit length (most common pattern)
     static Quaternion<T> fromAxisAngle(const Vector<T>& axis, T angle_rad) {
         if (axis.get_size() != 3) {
@@ -30,10 +34,10 @@ public:
         if (axis_norm_sq < T(1e-12))
         {
             // Invalid axis → return identity (common convention)
-            return Quaternion(T(1), T(0), T(0), T(0));
+            return identity();
         }
         if (std::abs(angle_rad) < T(1e-10)) {
-            return Quaternion(T(1), T(0), T(0), T(0));
+            return identity();
         }
         Vector<T> unit_axis = axis.normalization();
         T half_angle = angle_rad / T(2);
@@ -92,6 +96,17 @@ public:
         return q;
     }
 
+    static Quaternion<T> slerp(const Quaternion<T>& q0, const Quaternion<T>& q1, T t) {
+        T cos_theta = q0.dot(q1); // Get the dot product of both quaternions
+        T theta = std::acos(cos_theta); // Get the angle from that cos_theta
+        T sin_theta = std::sin(theta); // Put that angle into a sinusodial
+        T w = (sin((T(1) - t)*theta)/sin_theta)*q0.w() + ((sin(t*theta))/sin_theta)*q1.w();
+        T x = (sin((T(1) - t)*theta)/sin_theta)*q0.x() + ((sin(t*theta))/sin_theta)*q1.x();
+        T y = (sin((T(1) - t)*theta)/sin_theta)*q0.y() + ((sin(t*theta))/sin_theta)*q1.y();
+        T z = (sin((T(1) - t)*theta)/sin_theta)*q0.z() + ((sin(t*theta))/sin_theta)*q1.z();
+        return Quaternion(w, x, y, z);
+    }
+
     // Getters
     T w() const { return w_; }
     T x() const { return x_; }
@@ -102,7 +117,7 @@ public:
     Quaternion<T> normalized() const {
         T mag_sq = w_*w_ + x_*x_ + y_*y_ + z_*z_;
         if (mag_sq < T(1e-12)) {  // almost zero
-            return Quaternion(T(1), T(0), T(0), T(0)); // identity
+            return identity();
         }
         T inv_mag = T(1) / std::sqrt(mag_sq);
         return Quaternion(w_*inv_mag, x_*inv_mag, y_*inv_mag, z_*inv_mag);
@@ -156,6 +171,9 @@ public:
 
     // Rotate the inputted vector by the Quaternion
     Vector<T> rotate_vector(const Vector<T>& v) const;
+
+    // Dot product between two Quaternions
+    T dot(const Quaternion<T>& quat) const;
 };
 
     template<typename T>
@@ -218,6 +236,11 @@ public:
         Quaternion<T> temp = (*this) * real_quat;
         Quaternion<T> result = temp * inverse();
         return Vector<T>({result.x(), result.y(), result.z()});
+    }
+
+    template<typename T>
+    T Quaternion<T>::dot(const Quaternion<T>& quat) const {
+        return w_*quat.w() + x_*quat.x() + y_*quat.y() + z_*quat.z();
     }
 }
 
