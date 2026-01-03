@@ -46,6 +46,7 @@ namespace LinAlg
         Vector operator+(const Vector& second_vector) const; // Adding Vectors
         Vector operator-(const Vector& second_vector) const; // Subtracting Vectors
         Vector operator*(T scalar) const; // Multiplying the vector by a scalar
+        Vector operator/(T scalar) const; // Dividing the vector by a scalar
 
         // Dot Product
         Vector operator*(const Vector& second_vector) const;
@@ -71,6 +72,9 @@ namespace LinAlg
             out << "]";
             return out;
         }
+
+        // Squared norm
+        T normSquared() const;
     };
 
     // Constructor with a size_t parameter that makes a zero vector of row size parameter
@@ -169,6 +173,16 @@ namespace LinAlg
         return new_vector;
     }
 
+    // Division by scalar
+    template<typename T>
+    Vector<T> Vector<T>::operator/(T scalar) const {
+        Vector<T> result(_size);
+        for (size_t i = 0; i < _size; i++) {
+            result[i] = _vals[i] / scalar;
+        }
+        return result;
+    }
+
     // Calculates the magnitude of the vector
     template<typename T>
     double Vector<T>::magnitude() const { // The magnitude of a vector is always a double
@@ -206,6 +220,15 @@ namespace LinAlg
         cross_product_vector[1] = _vals[2]*second_vector[0] - _vals[0]*second_vector[2];
         cross_product_vector[2] = _vals[0]*second_vector[1] - _vals[1]*second_vector[0];
         return cross_product_vector;
+    }
+
+    template<typename T>
+    T Vector<T>::normSquared() const {
+        T sum = T(0);
+        for (size_t i = 0; i < _size; i++) {
+            sum += _vals[i] * _vals[i];
+        }
+        return sum;
     }
 
 } // namespace LinAlg

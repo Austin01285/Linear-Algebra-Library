@@ -67,12 +67,12 @@ namespace LinAlg
         Matrix<T> operator*(T scalar) const;
 
         // Identity Matrix
-        static Matrix<int> identity(size_t n) {
-            Matrix<int> identity_matrix(n, n);
+        static Matrix<T> identity(size_t n) {
+            Matrix<T> identity_matrix(n, n);
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
-                    if (i == j) identity_matrix(i, j) = 1;
-                    else identity_matrix(i, j) = 0;
+                    if (i == j) identity_matrix(i, j) = T(1);
+                    else identity_matrix(i, j) = T(0);
                 }
             }
             return identity_matrix;

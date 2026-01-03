@@ -151,6 +151,9 @@ public:
     // Multiplying two Quaternions
     Quaternion<T> operator*(const Quaternion<T>& q) const;
 
+    // Scalar multiplication
+    Quaternion<T> operator*(T scalar) const;
+
     // Returns the Conjugate of the current Quaternion
     Quaternion<T> conjugate() const {
         return Quaternion(w(), -(x()), -(y()), -(z()));
@@ -238,6 +241,11 @@ public:
             w() * q.y() - x() * q.z() + y() * q.w() + z() * q.x(),
             w() * q.z() + x() * q.y() - y() * q.x() + z() * q.w()
         );
+    }
+
+    template<typename T>
+    Quaternion<T> Quaternion<T>::operator*(T scalar) const {
+        return Quaternion<T>(w_ * scalar, x_ * scalar, y_ * scalar, z_ * scalar);
     }
 
     template<typename T>
