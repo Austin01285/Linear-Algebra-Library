@@ -138,10 +138,6 @@ public:
         return Quaternion(w_*inv_mag, x_*inv_mag, y_*inv_mag, z_*inv_mag);
     }
 
-    void normalize() {
-        *this = normalized();
-    }
-
     // Checks if the magnitude is at (or at least very close to) 1
     bool isUnit(T eps = T(1e-6)) const {
         T mag = std::sqrt(w_*w_ + x_*x_ + y_*y_ + z_*z_);
@@ -153,6 +149,9 @@ public:
 
     // Scalar multiplication
     Quaternion<T> operator*(T scalar) const;
+
+    // Quaternion Addition
+    Quaternion<T> operator+(const Quaternion<T>& q) const;
 
     // Returns the Conjugate of the current Quaternion
     Quaternion<T> conjugate() const {
@@ -246,6 +245,11 @@ public:
     template<typename T>
     Quaternion<T> Quaternion<T>::operator*(T scalar) const {
         return Quaternion<T>(w_ * scalar, x_ * scalar, y_ * scalar, z_ * scalar);
+    }
+
+    template<typename T>
+    Quaternion<T> Quaternion<T>::operator+(const Quaternion<T>& q) const {
+        return Quaternion<T>(w_ + q.w_, x_ + q.x_, y_ + q.y_, z_ + q.z_);
     }
 
     template<typename T>
