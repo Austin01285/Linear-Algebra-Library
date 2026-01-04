@@ -7,8 +7,8 @@
 
 #include <cmath>
 #include <stdexcept>
-#include "../include/Vector.h"
-#include "../include/Matrix.h"
+#include "Vector.h"
+#include "Matrix.h"
 
 namespace LinAlg {
 

@@ -2,7 +2,7 @@
 #define MATRIX_H
 
 #include <vector>
-#include "../include/Vector.h"
+#include "Vector.h"
 
 namespace LinAlg 
 {
