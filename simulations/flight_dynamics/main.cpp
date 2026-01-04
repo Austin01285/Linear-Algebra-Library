@@ -22,7 +22,7 @@ int main() {
         std::cout << "Starting 6-DOF simulation...\n\n";
 
         while (t < t_max) {
-            step(state, dt);
+            step_rk4(state, dt, t);
             t += dt;
 
             // Log every 0.5 seconds
@@ -32,6 +32,12 @@ int main() {
                 << "Velocity (body): " << state.velocity_body << "\n"
                 << "Attitude q: " << state.orientation << "\n"
                 << "Euler angles: " << state.orientation.toEulerXYZ() << "\n\n";
+            }
+
+            // Stop if hits the ground
+            if (state.position[2] <= 0.0) {
+                std::cout << "\n🎯 GROUND IMPACT at t = " << t << " s\n";
+                break;
             }
         }
 
