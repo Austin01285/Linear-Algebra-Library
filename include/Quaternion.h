@@ -138,6 +138,11 @@ public:
         return Quaternion(w_*inv_mag, x_*inv_mag, y_*inv_mag, z_*inv_mag);
     }
 
+    // Normalize
+    void normalize() {
+        *this = normalized();
+    }
+
     // Checks if the magnitude is at (or at least very close to) 1
     bool isUnit(T eps = T(1e-6)) const {
         T mag = std::sqrt(w_*w_ + x_*x_ + y_*y_ + z_*z_);

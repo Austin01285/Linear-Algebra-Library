@@ -27,10 +27,10 @@ A lightweight, header-based C++ linear algebra library with focus on performance
 # Build tests & demo
 mkdir build && cd build
 cmake ..
-cmake --build . --config Release
+cmake --build build --config Debug --target 6DoF_main
 
 # Run unit tests
-./tests/test_quaternion
+./build/Debug/test_matrix or test_quaternion or test_vector
 
 # Run simple 6-DoF simulation
-./simulations/flight_dynamics/flight_sim
+./build/Debug/6DoF_main.exe config.txt
