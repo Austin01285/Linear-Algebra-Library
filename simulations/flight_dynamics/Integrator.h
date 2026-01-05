@@ -11,12 +11,6 @@
 
 using namespace LinAlg;
 
-void ground_collision(RigidBodyState& state, double dt) {
-    state.position[2] = 0.0;
-    state.velocity_body[2] = 0.0;
-    std::cout << "*** GROUND IMPACT at t = " << (state.position[0]/100.0) << " ***\n";
-}
-
 void step_euler(RigidBodyState& state, double dt) {
     RigidBodyState derivative = derivatives(state, 0.00);
 
@@ -26,11 +20,6 @@ void step_euler(RigidBodyState& state, double dt) {
     state.orientation = state.orientation + (derivative.orientation * dt);
     state.orientation = state.orientation.normalized();
     state.angular = state.angular + (derivative.angular * dt);
-
-    // Ground Collision Detection
-    if (state.position[2] < 0.0) {
-        ground_collision(state, dt);
-    }
 }
 
 void step_rk4(RigidBodyState& state, double dt, double t) {
@@ -59,11 +48,6 @@ void step_rk4(RigidBodyState& state, double dt, double t) {
     state = state + (combined * (dt * 1/6));
 
     state.orientation.normalized();
-
-    // Ground Collision Detection
-    if (state.position[2] < 0.0) {
-        ground_collision(state, dt);
-    }
 }
 
 

@@ -1,0 +1,13 @@
+# 6-DOF Simulation Configuration
+initial_position_x = 0.0
+initial_position_y = 0.0
+initial_position_z = 1000.0
+initial_velocity_x = 100.0
+initial_velocity_y = 0.0
+initial_velocity_z = 0.0
+initial_pitch_deg = 0.0
+initial_angvel_p = 0.0
+initial_angvel_q = 0.0
+initial_angvel_r = 0.0
+time_step = 0.01
+max_time = 30.0

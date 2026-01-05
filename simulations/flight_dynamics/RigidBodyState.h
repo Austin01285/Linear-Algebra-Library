@@ -22,6 +22,7 @@ struct RigidBodyState {
         new_state.velocity_body = (*this).velocity_body + state.velocity_body;
         new_state.orientation = (*this).orientation + state.orientation;
         new_state.angular = (*this).angular + state.angular;
+        return new_state;
     }
 
     RigidBodyState operator*(double scalar) const {
@@ -30,6 +31,7 @@ struct RigidBodyState {
         new_state.velocity_body = (*this).velocity_body * scalar;
         new_state.orientation = (*this).orientation * scalar;
         new_state.angular = (*this).angular * scalar;
+        return new_state;
     }
 };
 

@@ -26,7 +26,7 @@ TEST_F(QuaternionTests, TestRegularScalarGetters) {
 
 TEST_F(QuaternionTests, TestNormalizationScalarGetters) {
     EXPECT_EQ(test_quat.isUnit(), false);
-    test_quat.normalize();
+    test_quat.normalized();
     EXPECT_NEAR(test_quat.w(), 0.85, 0.01);
     EXPECT_NEAR(test_quat.x(), 0.00, 0.01);
     EXPECT_NEAR(test_quat.y(), 0.51, 0.01);
