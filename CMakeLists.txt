@@ -11,6 +11,7 @@ FetchContent_Declare(
   googletest
   URL https://github.com/google/googletest/archive/refs/heads/main.zip
 )
+
 include_directories("../include")
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/simulations/flight_dynamics)

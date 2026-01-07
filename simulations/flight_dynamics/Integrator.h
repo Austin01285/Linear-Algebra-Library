@@ -17,7 +17,9 @@ void step_euler(RigidBodyState& state, double dt, VehicleConfig& config) {
     // Eular integration
     state.position = state.position + (derivative.position * dt);
     state.velocity_body = state.velocity_body + (derivative.velocity_body * dt);
-    state.orientation = state.orientation + (derivative.orientation * dt);
+    Quaternion<double> w_quat({0.00, state.angular[0], state.angular[1], state.angular[2]});
+    Quaternion<double> quat_rate = state.orientation * w_quat * 0.5;
+    state.orientation = state.orientation + quat_rate * dt;
     state.orientation = state.orientation.normalized();
     state.angular = state.angular + (derivative.angular * dt);
 }

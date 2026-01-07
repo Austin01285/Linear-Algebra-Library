@@ -159,7 +159,9 @@ cmake ..
 cmake --build build --config Debug --target 6DoF_main
 
 # Run unit tests
-./build/Debug/test_matrix or test_quaternion or test_vector
+cd ./build/Debug/
+./test_matrix or ./test_quaternion or ./test_vector
 
 # Run simple 6-DoF simulation
-./build/Debug/6DoF_main.exe config.txt
+cd ./build/Debug/
+./6DoF_main.exe config.txt

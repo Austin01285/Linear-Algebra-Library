@@ -18,19 +18,19 @@ struct RigidBodyState {
 
     RigidBodyState operator+(const RigidBodyState& state) const {
         RigidBodyState new_state;
-        new_state.position = (*this).position + state.position;
-        new_state.velocity_body = (*this).velocity_body + state.velocity_body;
-        new_state.orientation = (*this).orientation + state.orientation;
-        new_state.angular = (*this).angular + state.angular;
+        new_state.position = position + state.position;
+        new_state.velocity_body = velocity_body + state.velocity_body;
+        new_state.orientation = orientation;
+        new_state.angular = angular + state.angular;
         return new_state;
     }
 
     RigidBodyState operator*(double scalar) const {
         RigidBodyState new_state;
-        new_state.position = (*this).position * scalar;
-        new_state.velocity_body = (*this).velocity_body * scalar;
-        new_state.orientation = (*this).orientation * scalar;
-        new_state.angular = (*this).angular * scalar;
+        new_state.position = position * scalar;
+        new_state.velocity_body = velocity_body * scalar;
+        new_state.orientation = orientation;
+        new_state.angular = angular * scalar;
         return new_state;
     }
 };

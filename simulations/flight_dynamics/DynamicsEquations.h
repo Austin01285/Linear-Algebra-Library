@@ -37,6 +37,7 @@ struct VehicleConfig {
     double C_lp;
     double C_nr;
     double C_mq;
+    double initial_alpha;
     double aspect_ratio;
     double oswald_eff;
     double thrust_magnitude;
@@ -46,7 +47,7 @@ struct VehicleConfig {
     CL_alpha(5.5), CD_alpha(0.05), CL_zero(0.0), CD_zero(0.025), CY_beta(-1.0), 
     CM_alpha(-2.0), CM_zero(-0.01), c_bar(1.8), CL_beta(-0.3), CN_beta(0.25),
     C_lp(-1.0), C_nr(-0.5), C_mq(-4.0), aspect_ratio(7.0), oswald_eff(0.85), 
-    thrust_magnitude(2000.0), thrust_direction(3) {}
+    thrust_magnitude(2000.0), thrust_direction({1.0, 0.0, 0.0}) {}
 };
 
 std::vector<double> ISA_Model(double altitude) {
@@ -83,7 +84,7 @@ ForcesMoments compute_forces_moments(const RigidBodyState& state, double t, cons
     fm.force_body = config.thrust_direction * config.thrust_magnitude;
 
     // Applying gravity to body frame = R^T * [0, 0, -g*mass] (inertial frame)
-    Vector<double> gravity_inertial({0.00, 0.00, -9.81*100}); // mass = 100 kg
+    Vector<double> gravity_inertial({0.00, 0.00, -9.81*config.mass});
     Matrix<double> R = state.orientation.to_rotation_matrix();
     Vector<double> gravity_body = R.transpose()*gravity_inertial;
     fm.force_body = fm.force_body + gravity_body;
@@ -95,16 +96,18 @@ ForcesMoments compute_forces_moments(const RigidBodyState& state, double t, cons
     double speed_sq = state.velocity_body.normSquared();
     double alpha;
     double beta;
+    double q;
     if (speed_sq > 1e-6) {
         alpha = std::atan2(state.velocity_body[2], state.velocity_body[0]); // alpha = angle of attack
         beta = std::asin(state.velocity_body[1]/state.velocity_body.magnitude());
+        q = 0.5 * isa_values[0] * speed_sq;
     } else {
         alpha = 0.0;
         beta = 0.0;
+        q = 0.0;
     }
 
     // Find Lift and Drag Magnitudes
-    double q = 0.5 * isa_values[0] * speed_sq * speed_sq;
     double lift_coeff = config.CL_zero + config.CL_alpha * alpha;
     double drag_coeff = config.CD_zero + (lift_coeff * lift_coeff) / (
         M_PI * config.aspect_ratio * config.oswald_eff); 
@@ -115,7 +118,7 @@ ForcesMoments compute_forces_moments(const RigidBodyState& state, double t, cons
 
     // Find Lift and Drag Vectors
     Vector<double> drag_vector(3);
-    Vector<double> lift_vector = Vector<double>({-std::sin(alpha), 0.0, std::cos(alpha)}) * lift_mag;
+    Vector<double> lift_vector = Vector<double>({-std::sin(alpha), 0.0, std::cos(alpha)});
     if (speed_sq > 1e-6) {
         drag_vector = state.velocity_body.normalization() * -drag_mag;
     }
