@@ -14,7 +14,7 @@ using namespace LinAlg;
 
 using namespace std;
 
-bool load_config(const string& filename, RigidBodyState& state, double& dt, double& t_max) {
+bool load_config(const string& filename, RigidBodyState& state, VehicleConfig& config, double& dt, double& t_max) {
     std::ifstream file(filename);
     if (!file.is_open()) {
         std::cerr << "Could not open config file: " << filename << "\n";
@@ -41,6 +41,31 @@ bool load_config(const string& filename, RigidBodyState& state, double& dt, doub
             } else if (key == "initial_angvel_p") state.angular[0] = value;
             else if (key == "initial_angvel_q") state.angular[1] = value;
             else if (key == "initial_angvel_r") state.angular[2] = value;
+            else if (key == "reference_area") config.reference_area = value;
+            else if (key == "mass") config.mass = value;
+            else if (key == "Ixx") config.inertia_tensor(0, 0) = value;
+            else if (key == "Iyy") config.inertia_tensor(1, 1) = value;
+            else if (key == "Izz") config.inertia_tensor(2, 2) = value;
+            else if (key == "Ixz") config.inertia_tensor(0, 2) = value;
+            else if (key == "thrust_magnitude") config.thrust_magnitude = value;
+            else if (key == "thrust_dir_x") config.thrust_direction[0] = value;
+            else if (key == "thrust_dir_y") config.thrust_direction[1] = value;
+            else if (key == "thrust_dir_z") config.thrust_direction[2] = value;
+            else if (key == "CL_alpha") config.CL_alpha = value;
+            else if (key == "CD_alpha") config.CD_alpha = value;
+            else if (key == "CL_zero") config.CL_zero = value;
+            else if (key == "CD_zero") config.CD_zero = value;
+            else if (key == "CY_beta") config.CY_beta = value;
+            else if (key == "CM_alpha") config.CM_alpha = value;
+            else if (key == "CM_zero") config.CM_zero = value;
+            else if (key == "c_bar") config.c_bar = value;
+            else if (key == "CL_beta") config.CL_beta = value;
+            else if (key == "CN_beta") config.CN_beta = value;
+            else if (key == "C_lp") config.C_lp = value;
+            else if (key == "C_nr") config.C_nr = value;
+            else if (key == "C_mq") config.C_mq = value;
+            else if (key == "aspect_ratio") config.aspect_ratio = value;
+            else if (key == "oswald_eff") config.oswald_eff = value;
             else if (key == "time_step") dt = value;
             else if (key == "max_time") t_max = value;
         }
@@ -55,15 +80,18 @@ int main(int argc, char* argv[]) {
         state.velocity_body = Vector<double>(3);  // Starting 100 m/s forward
         state.angular = Vector<double>(3);
 
+        VehicleConfig config;
+
         double dt = 0.01;
         double t_max = 30.0;
         double t = 0.0;
+        double s_area = 10.0;
 
         // Load config file
         filesystem::path exe_dir = filesystem::current_path();
         filesystem::path config_path = exe_dir.parent_path().parent_path() / "config.txt";
         string config_file = config_path.string();
-        if (!load_config(config_file, state, dt, t_max)) {
+        if (!load_config(config_file, state, config, dt, t_max)) {
             std::cerr << "Using default values\n";
             state.position = Vector<double>({0.0, 0.0, 1000.0});
             state.velocity_body = Vector<double>({100.0, 0.0, 0.0});
@@ -76,7 +104,7 @@ int main(int argc, char* argv[]) {
         cout << "Starting 6-DOF simulation...\n\n";
 
         while (t < t_max) {
-            step_rk4(state, dt, t);
+            step_rk4(state, dt, t, config);
             t += dt;
 
             // Log every 0.5 seconds
